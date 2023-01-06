@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  RecordsViewController.swift
 //  Pomodoro
 //
 //  Created by Riley Lai on 2023/1/5.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class RecordsViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
