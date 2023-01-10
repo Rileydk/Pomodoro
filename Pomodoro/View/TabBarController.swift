@@ -12,12 +12,18 @@ class TabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupVCs()
+        configureViews()
     }
 
     private func setupVCs() {
         viewControllers = Tab.allCases.map {
             $0.controller()
         }
+        selectedIndex = 1
+    }
+
+    private func configureViews() {
+        tabBar.tintColor = .customInfoColor
     }
 }
 

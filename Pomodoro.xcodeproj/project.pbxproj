@@ -16,6 +16,7 @@
 		BFA52160296723FB0046CEEB /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFA5215F296723FB0046CEEB /* TabBarController.swift */; };
 		BFA52162296725C30046CEEB /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFA52161296725C30046CEEB /* SettingsViewController.swift */; };
 		BFA52164296725D10046CEEB /* RecordsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFA52163296725D10046CEEB /* RecordsViewController.swift */; };
+		BFA5218A296D3A190046CEEB /* UIColor+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFA52189296D3A190046CEEB /* UIColor+Ext.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +31,7 @@
 		BFA5215F296723FB0046CEEB /* TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
 		BFA52161296725C30046CEEB /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		BFA52163296725D10046CEEB /* RecordsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordsViewController.swift; sourceTree = "<group>"; };
+		BFA52189296D3A190046CEEB /* UIColor+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Ext.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,6 +69,7 @@
 				BFA5216529672C4F0046CEEB /* ViewModel */,
 				BFA5216629672C5A0046CEEB /* Model */,
 				BF9814692967230A0014925E /* Resource */,
+				BFA52188296D3A090046CEEB /* Extension */,
 				BF98145E296716F30014925E /* Info.plist */,
 			);
 			path = Pomodoro;
@@ -114,6 +117,14 @@
 			children = (
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		BFA52188296D3A090046CEEB /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				BFA52189296D3A190046CEEB /* UIColor+Ext.swift */,
+			);
+			path = Extension;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -209,6 +220,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BFA5218A296D3A190046CEEB /* UIColor+Ext.swift in Sources */,
 				BF981455296716F20014925E /* TimerViewController.swift in Sources */,
 				BFA52160296723FB0046CEEB /* TabBarController.swift in Sources */,
 				BF981451296716F20014925E /* AppDelegate.swift in Sources */,
