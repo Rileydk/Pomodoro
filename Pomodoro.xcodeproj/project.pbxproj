@@ -17,6 +17,7 @@
 		BFA52162296725C30046CEEB /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFA52161296725C30046CEEB /* SettingsViewController.swift */; };
 		BFA52164296725D10046CEEB /* RecordsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFA52163296725D10046CEEB /* RecordsViewController.swift */; };
 		BFA5218A296D3A190046CEEB /* UIColor+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFA52189296D3A190046CEEB /* UIColor+Ext.swift */; };
+		BFA5218C296D451D0046CEEB /* TimerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFA5218B296D451D0046CEEB /* TimerViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +33,7 @@
 		BFA52161296725C30046CEEB /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		BFA52163296725D10046CEEB /* RecordsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordsViewController.swift; sourceTree = "<group>"; };
 		BFA52189296D3A190046CEEB /* UIColor+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Ext.swift"; sourceTree = "<group>"; };
+		BFA5218B296D451D0046CEEB /* TimerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,6 +110,7 @@
 		BFA5216529672C4F0046CEEB /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				BFA5218B296D451D0046CEEB /* TimerViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -224,6 +227,7 @@
 				BF981455296716F20014925E /* TimerViewController.swift in Sources */,
 				BFA52160296723FB0046CEEB /* TabBarController.swift in Sources */,
 				BF981451296716F20014925E /* AppDelegate.swift in Sources */,
+				BFA5218C296D451D0046CEEB /* TimerViewModel.swift in Sources */,
 				BFA52162296725C30046CEEB /* SettingsViewController.swift in Sources */,
 				BF981453296716F20014925E /* SceneDelegate.swift in Sources */,
 				BFA52164296725D10046CEEB /* RecordsViewController.swift in Sources */,

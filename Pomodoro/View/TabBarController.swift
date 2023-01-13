@@ -38,7 +38,8 @@ extension TabBarController {
             case .records:
                 controller = RecordsViewController()
             case .timer:
-                controller = TimerViewController()
+                let viewModel = TimerViewModel()
+                controller = TimerViewController(viewModel: viewModel)
             case .settings:
                 controller = SettingsViewController()
             }
