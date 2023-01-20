@@ -91,6 +91,7 @@ public class TimerViewModel {
             notifyOtherDevicesCountdownState()
             countdownStateBinder?()
             if countdownState == .finished {
+                notifyUserCountdownFinished()
                 pushToNextRound()
                 resetRound()
             }
@@ -280,6 +281,13 @@ public class TimerViewModel {
 
     @objc private func counting() {
         secondsPassed += 1
+    }
+
+    private func notifyUserCountdownFinished(afterSeconds seconds: Int? = nil) {
+        CountdownNotification.registerNotification(
+            type: countdownType,
+            startAt: Date(),
+            durationBySeconds: seconds)
     }
 
     private func notifyOtherDevicesCountdownState() {
