@@ -71,7 +71,7 @@ public class TimerViewModel {
         static let filled = UIImage(systemName: "circle.fill")!
     }
 
-    private var timer: Timer?
+    private var sourceTimer: DispatchSourceTimer?
 
     /// Used to pass the updated time left to View Controller
     var timeLabelBinder: ((String) -> Void)?
@@ -91,7 +91,6 @@ public class TimerViewModel {
             notifyOtherDevicesCountdownState()
             countdownStateBinder?()
             if countdownState == .finished {
-                notifyUserCountdownFinished()
                 pushToNextRound()
                 resetRound()
             }
@@ -233,29 +232,34 @@ public class TimerViewModel {
 
     // MARK: - Timer Control
     func startTimer() {
-        timer = Timer.scheduledTimer(
-            timeInterval: 1.0,
-            target: self,
-            selector: #selector(counting),
-            userInfo: nil,
-            repeats: true)
-
-        RunLoop.current.add(timer!, forMode: .common)
-
-        if currentRound == 0 {
-            currentRound = 1
+        let queue = DispatchQueue(label: "com.pomodoro.app.timer", qos: .userInitiated)
+        sourceTimer = DispatchSource.makeTimerSource(flags: .strict,queue: queue)
+        sourceTimer?.schedule(deadline: .now(), repeating: .seconds(1), leeway: .nanoseconds(0))
+        sourceTimer?.setEventHandler {
+            DispatchQueue.main.async { [weak self] in
+                self?.counting()
+            }
         }
-        countdownState = .counting
-        storePresentCountdownInfo(startDate: Date())
+        sourceTimer?.activate()
+
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            if self.currentRound == 0 {
+                self.currentRound = 1
+            }
+            self.countdownState = .counting
+            self.notifyUserCountdownFinished(afterSeconds: self.settingTime * 60)
+            self.storePresentCountdownInfo(startDate: Date())
+        }
     }
 
     func pauseTimer() {
-        timer?.invalidate()
+        sourceTimer?.cancel()
         countdownState = .paused
     }
 
     func resetRound() {
-        timer?.invalidate()
+        sourceTimer?.cancel()
         countdownState = .notStart
         secondsPassed = 0
     }
