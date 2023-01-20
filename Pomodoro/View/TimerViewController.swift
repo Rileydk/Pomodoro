@@ -7,11 +7,19 @@
 
 import UIKit
 
-class TimerViewController: UIViewController {
+final class TimerViewController: UIViewController {
 
     private let timerLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 58, weight: .semibold)
+        label.textColor = .customInfoColor
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+
+    private let typeLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 32, weight: .semibold)
         label.textColor = .customInfoColor
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -26,7 +34,7 @@ class TimerViewController: UIViewController {
 
     private lazy var startButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(systemName: "play.fill"), for: .normal)
+        button.setImage(UIImage(systemName: "play"), for: .normal)
         button.contentVerticalAlignment = .fill
         button.contentHorizontalAlignment = .fill
         button.addTarget(self, action: #selector(startTimer), for: .touchUpInside)
@@ -36,7 +44,7 @@ class TimerViewController: UIViewController {
 
     private lazy var pauseButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(systemName: "pause.fill"), for: .normal)
+        button.setImage(UIImage(systemName: "pause"), for: .normal)
         button.contentVerticalAlignment = .fill
         button.contentHorizontalAlignment = .fill
         button.addTarget(self, action: #selector(pauseTimer), for: .touchUpInside)
@@ -46,7 +54,7 @@ class TimerViewController: UIViewController {
 
     private lazy var resumeButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(systemName: "play.fill"), for: .normal)
+        button.setImage(UIImage(systemName: "play"), for: .normal)
         button.contentVerticalAlignment = .fill
         button.contentHorizontalAlignment = .fill
         button.addTarget(self, action: #selector(startTimer), for: .touchUpInside)
@@ -54,12 +62,12 @@ class TimerViewController: UIViewController {
         return button
     }()
 
-    private lazy var stopButton: UIButton = {
+    private lazy var resetButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(systemName: "gobackward"), for: .normal)
+        button.setImage(UIImage(systemName: "backward.end"), for: .normal)
         button.contentVerticalAlignment = .fill
         button.contentHorizontalAlignment = .fill
-        button.addTarget(self, action: #selector(stopTimer), for: .touchUpInside)
+        button.addTarget(self, action: #selector(resetRound), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -85,46 +93,30 @@ class TimerViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configureViews()
-        viewModel.timeLabelBinder = { [weak self] timeLeftText in
-            self?.timerLabel.text = timeLeftText
-        }
-
-        viewModel.countdownStateBinder = { [weak self] countdownState in
-            guard let self = self else { return }
-            switch countdownState {
-            case .counting:
-                self.startButton.isHidden = true
-                self.pauseButton.isHidden = false
-                self.controlView.subviews.forEach { $0.isHidden = true }
-            case .notCounting:
-                self.startButton.isHidden = false
-                self.pauseButton.isHidden = true
-                self.controlView.subviews.forEach { $0.isHidden = true }
-            case .paused:
-                self.startButton.isHidden = true
-                self.pauseButton.isHidden = true
-                self.controlView.subviews.forEach { $0.isHidden = false }
-            }
-        }
+        configureViewModel()
     }
 
     private func configureViews() {
         view.backgroundColor = .customBackgroundColor
-        [timerLabel, sessionView, startButton, pauseButton, controlView]
+        [timerLabel, typeLabel, sessionView, startButton, pauseButton, controlView]
             .forEach { view.addSubview($0) }
-        [resumeButton, stopButton]
+        [resumeButton, resetButton]
             .forEach { controlView.addArrangedSubview($0) }
         controlView.subviews.forEach { $0.isHidden = true }
         pauseButton.isHidden = true
-        configureSessionView()
+        updateSessionView()
 
         timerLabel.text = viewModel.timeLeftText
+        typeLabel.text = viewModel.countdownType.title
 
         let controlViewHeight: CGFloat = 38
         let controlViewTopDistance: CGFloat = 28
         NSLayoutConstraint.activate([
             timerLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             timerLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+
+            typeLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            typeLabel.bottomAnchor.constraint(equalTo: timerLabel.topAnchor, constant: -12),
 
             sessionView.topAnchor.constraint(equalTo: timerLabel.bottomAnchor, constant: 20),
             sessionView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -144,8 +136,8 @@ class TimerViewController: UIViewController {
             resumeButton.heightAnchor.constraint(equalToConstant: controlViewHeight),
             resumeButton.widthAnchor.constraint(equalTo: startButton.heightAnchor, multiplier: 1),
 
-            stopButton.heightAnchor.constraint(equalToConstant: controlViewHeight),
-            stopButton.widthAnchor.constraint(equalTo: startButton.heightAnchor, multiplier: 1),
+            resetButton.heightAnchor.constraint(equalToConstant: controlViewHeight),
+            resetButton.widthAnchor.constraint(equalTo: startButton.heightAnchor, multiplier: 1),
 
             pauseButton.heightAnchor.constraint(equalToConstant: controlViewHeight),
             pauseButton.widthAnchor.constraint(equalTo: startButton.heightAnchor, multiplier: 1),
@@ -157,22 +149,40 @@ class TimerViewController: UIViewController {
         ])
     }
 
-    private func configureSessionView() {
-        for round in 1 ... viewModel.sessionRounds {
+    private func updateSessionView() {
+        sessionView.subviews.forEach { $0.removeFromSuperview() }
+
+        for index in 0 ..< viewModel.sessionImages.count {
             let imageView = UIImageView()
-            if round < viewModel.presentRound {
-                imageView.image = UIImage(systemName: "circle.filled")
-            } else if round == viewModel.presentRound {
-                imageView.image = UIImage(systemName: "circle.lefthalf.filled")
-            } else {
-                imageView.image = UIImage(systemName: "circle")
-            }
+            imageView.image = viewModel.sessionImages[index]
             imageView.tintColor = .customInfoColor
             NSLayoutConstraint.activate([
                 imageView.widthAnchor.constraint(equalToConstant: 18),
                 imageView.heightAnchor.constraint(equalTo: imageView.widthAnchor, multiplier: 1)
             ])
+
             sessionView.addArrangedSubview(imageView)
+        }
+    }
+
+    private func configureViewModel() {
+        viewModel.timeLabelBinder = { [weak self] timeLeftText in
+            self?.timerLabel.text = timeLeftText
+        }
+
+        viewModel.countdownStateBinder = { [weak self] in
+            guard let self = self else { return }
+            self.startButton.isHidden = self.viewModel.startButtonShouldHide
+            self.pauseButton.isHidden = self.viewModel.pauseButtonShouldHide
+            self.controlView.subviews.forEach {
+                $0.isHidden = self.viewModel.resumeAndResetButtonsShouldHide
+            }
+
+            self.updateSessionView()
+        }
+
+        viewModel.countdownTypeBinder = { [weak self] countdownType in
+            self?.typeLabel.text = countdownType.title
         }
     }
 
@@ -184,7 +194,7 @@ class TimerViewController: UIViewController {
         viewModel.pauseTimer()
     }
 
-    @objc private func stopTimer() {
-        viewModel.stopTimer()
+    @objc private func resetRound() {
+        viewModel.resetRound()
     }
 }

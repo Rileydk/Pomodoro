@@ -6,27 +6,69 @@
 //
 
 import Foundation
+import UIKit.UIImage
 
 extension UserDefaults {
     enum TimeLengthPreferences {
         static var focus = 1
-        static var shortBreak = 5
-        static var longBreak = 15
+        static var shortBreak = 1
+        static var longBreak = 2
     }
 
-    enum Session {
-        static var rounds = 4
+    enum SessionPreferences {
+        static var rounds = 2
+        static var automaticallyStartBreak = false
+        static var automaticallyStartNextRound = false
+    }
+
+    enum NotificationKey {
+        /// Used to store notification's identifier in case we need to remove it before triggered
+        static let countdownFinished = "countdownFinished"
+        static var startDate = "start date"
     }
 }
 
-class TimerViewModel {
-
-    enum CountdownState {
-        case notCounting, counting, paused
+public class TimerViewModel {
+    private enum CountdownState {
+        /// Round not started yet
+        case notStart
+        /// Round finished
+        case counting
+        /// Round start then paused
+        case paused
+        case finished
     }
 
     enum CountdownType {
-        case focus, `break`
+        case focus
+        case `break`
+
+        var title: String {
+            switch self {
+            case .focus: return "Focus"
+            case .break: return "Break"
+            }
+        }
+
+        var notificationTitle: String {
+            switch self {
+            case .focus: return "專注"
+            case .break: return "休息"
+            }
+        }
+
+        mutating func toggle() {
+            switch self {
+            case .focus: self = .break
+            case .break: self = .focus
+            }
+        }
+    }
+
+    private enum SessionIcon {
+        static let empty = UIImage(systemName: "circle")!
+        static let half = UIImage(systemName: "circle.lefthalf.filled")!
+        static let filled = UIImage(systemName: "circle.fill")!
     }
 
     private var timer: Timer?
@@ -35,22 +77,53 @@ class TimerViewModel {
     var timeLabelBinder: ((String) -> Void)?
 
     /// Used to pass the countdown state to View Controller
-    var countdownStateBinder: ((CountdownState) -> Void)?
+    var countdownStateBinder: (() -> Void)?
+
+    /// Used to pass the countdown type to View Controller
+    var countdownTypeBinder: ((CountdownType) -> Void)?
+
+    /// Used to pass the session state to View Controller
+    var sessionBinder: (() -> Void)?
 
     /// Represent the state of timer
-    var countdownState: CountdownState = .notCounting {
+    private var countdownState: CountdownState = .notStart {
         didSet {
-            countdownStateBinder?(countdownState)
+            notifyOtherDevicesCountdownState()
+            countdownStateBinder?()
+            if countdownState == .finished {
+                pushToNextRound()
+                resetRound()
+            }
         }
     }
 
     /// Represent the type of counting
-    var countdownType: CountdownType = .focus
+    var countdownType: CountdownType = .focus {
+        didSet {
+            countdownTypeBinder?(countdownType)
+        }
+    }
+
+    /// Current countdown time length
+    private var settingTime: Int {
+        let settingTime: Int
+        switch countdownType {
+        case .focus:
+            settingTime = UserDefaults.TimeLengthPreferences.focus
+        case .break:
+            if isLastRound {
+                settingTime = UserDefaults.TimeLengthPreferences.longBreak
+            } else {
+                settingTime = UserDefaults.TimeLengthPreferences.shortBreak
+            }
+        }
+        return settingTime
+    }
 
     /// Seconds passed during timer count down
     private var secondsPassed = 0 {
         didSet {
-            timeLeft = UserDefaults.TimeLengthPreferences.focus.toSeconds - secondsPassed
+            timeLeft = settingTime.toSeconds - secondsPassed
         }
     }
 
@@ -62,11 +135,10 @@ class TimerViewModel {
                     \(timeLeft.remainMinutes.timeTextified):\
                     \(timeLeft.remainSeconds.timeTextified)
                     """
-            } else {
-                countdownState = .notCounting
-                timer?.invalidate()
+                if timeLeft == 0 && countdownState == .counting {
+                    countdownState = .finished
+                }
             }
-
         }
     }
 
@@ -84,24 +156,96 @@ class TimerViewModel {
     }
 
     /// Rounds per session
-    var sessionRounds: Int {
-        UserDefaults.Session.rounds
+    private var sessionRounds: Int {
+        UserDefaults.SessionPreferences.rounds
     }
 
     /// Present round in the present session
-    var presentRound = 1
+    private var currentRound = 0 {
+        didSet {
+            sessionBinder?()
+        }
+    }
+
+    private var isLastRound: Bool {
+        currentRound == sessionRounds
+    }
+
+    /// Used to display the present round in a session
+    var sessionImages: [UIImage] {
+        var images = [UIImage]()
+        for round in 1 ... sessionRounds {
+            let image: UIImage
+            if round < currentRound {
+                image = SessionIcon.filled
+            } else if round == currentRound {
+                if countdownType == .break && countdownState != .notStart {
+                    image = SessionIcon.filled
+                } else if countdownType == .break ||
+                         (countdownType == .focus && countdownState != .notStart) {
+                    image = SessionIcon.half
+                } else {
+                    image = SessionIcon.empty
+                }
+            } else {
+                image = SessionIcon.empty
+            }
+            images.append(image)
+        }
+        return images
+    }
+
+    private var automaticallyStartBreak: Bool {
+        UserDefaults.SessionPreferences.automaticallyStartBreak
+    }
+
+    private var automaticallyStartNextRound: Bool {
+        UserDefaults.SessionPreferences.automaticallyStartNextRound
+    }
+
+    var startButtonShouldHide: Bool {
+        switch countdownState {
+        case .counting, .paused,
+             .notStart where automaticallyStartBreak:
+            return true
+        default:
+            return false
+        }
+    }
+
+    var pauseButtonShouldHide: Bool {
+        switch countdownState {
+        case .counting,
+             .notStart where automaticallyStartBreak:
+            return false
+        default:
+            return true
+        }
+    }
+
+    var resumeAndResetButtonsShouldHide: Bool {
+        switch countdownState {
+        case .paused: return false
+        default: return true
+        }
+    }
 
     // MARK: - Timer Control
     func startTimer() {
         timer = Timer.scheduledTimer(
             timeInterval: 1.0,
             target: self,
-            selector: #selector(countup),
+            selector: #selector(counting),
             userInfo: nil,
             repeats: true)
 
         RunLoop.current.add(timer!, forMode: .common)
+
+        if currentRound == 0 {
+            currentRound = 1
+        }
         countdownState = .counting
+        storePresentCountdownInfo(startDate: Date())
     }
 
     func pauseTimer() {
@@ -109,14 +253,53 @@ class TimerViewModel {
         countdownState = .paused
     }
 
-    func stopTimer() {
+    func resetRound() {
         timer?.invalidate()
-        countdownState = .notCounting
+        countdownState = .notStart
         secondsPassed = 0
     }
 
-    @objc private func countup() {
+    private func pushToNextRound() {
+        countdownType.toggle()
+
+        if countdownType == .break {
+            if automaticallyStartBreak {
+                startTimer()
+            }
+        } else {
+            if isLastRound {
+                currentRound = 0
+            } else {
+                currentRound += 1
+                if automaticallyStartNextRound {
+                    startTimer()
+                }
+            }
+        }
+    }
+
+    @objc private func counting() {
         secondsPassed += 1
+    }
+
+    private func notifyOtherDevicesCountdownState() {
+        // print(#function)
+        // 通知所有其他裝置目前計時情形(type, time, state, session)
+        // 有變動才通知
+        // Push
+        // WatchConnectivity
+        // 其他裝置收到通知，開啟時各自繼續計時
+    }
+
+    private func storePresentCountdownInfo(startDate: Date) {
+        // print(#function)
+        // 儲存用來通知其他裝置的必要資訊（startTimestamp）(timeLengthPreferences, sessionPreferences 的部分本來就儲存在共同的地方)
+        UserDefaults.standard.set(startDate, forKey: UserDefaults.NotificationKey.startDate)
+    }
+
+    private func storeCountdownRecord() {
+        // print(#function)
+        // 儲存完成計時的紀錄到 Core Data
     }
 }
 

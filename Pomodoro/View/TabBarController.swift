@@ -8,7 +8,6 @@
 import UIKit
 
 class TabBarController: UITabBarController {
-
     override func viewDidLoad() {
         super.viewDidLoad()
         setupVCs()
@@ -38,8 +37,8 @@ extension TabBarController {
             case .records:
                 controller = RecordsViewController()
             case .timer:
-                let viewModel = TimerViewModel()
-                controller = TimerViewController(viewModel: viewModel)
+                let timerViewModel = TimerViewModel()
+                controller = TimerViewController(viewModel: timerViewModel)
             case .settings:
                 controller = SettingsViewController()
             }
