@@ -19,8 +19,21 @@
 		E52E150B297FCE38007461CD /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E52E150A297FCE38007461CD /* Settings.swift */; };
 		E52E150D297FCE80007461CD /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E52E150C297FCE80007461CD /* SettingsViewModel.swift */; };
 		E56A7AE9297791B30089737C /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E56A7AE7297791B30089737C /* SettingsViewController.swift */; };
+		E57953862984039D008C56E7 /* StorageProvider+Add.swift in Sources */ = {isa = PBXBuildFile; fileRef = E57953852984039D008C56E7 /* StorageProvider+Add.swift */; };
+		E5795388298408B9008C56E7 /* Date+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5795387298408B9008C56E7 /* Date+Extension.swift */; };
+		E579538A298408D8008C56E7 /* DateComponents+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5795389298408D8008C56E7 /* DateComponents+Extension.swift */; };
+		E579538C29840D84008C56E7 /* StorageProvider+fetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = E579538B29840D84008C56E7 /* StorageProvider+fetch.swift */; };
+		E579538E2984D762008C56E7 /* ReportRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = E579538D2984D762008C56E7 /* ReportRecord.swift */; };
 		E5CC5B4F297FDBE10096AB58 /* DurationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5CC5B4E297FDBE10096AB58 /* DurationViewController.swift */; };
+		E5CC5B53298016CD0096AB58 /* PDUbiquitousPropertyValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5CC5B52298016CD0096AB58 /* PDUbiquitousPropertyValue.swift */; };
+		E5CC5B562981309C0096AB58 /* UserDefaults+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5CC5B552981309C0096AB58 /* UserDefaults+Extension.swift */; };
+		E5CC5B58298130C00096AB58 /* UserDefaultValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5CC5B57298130C00096AB58 /* UserDefaultValue.swift */; };
+		E5CC5B5D298133B90096AB58 /* StorageProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5CC5B5C298133B90096AB58 /* StorageProvider.swift */; };
+		E5CC5B6329817F280096AB58 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E5CC5B6229817F280096AB58 /* CloudKit.framework */; };
+		E5CC5B652982C0C60096AB58 /* DetailRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5CC5B642982C0C60096AB58 /* DetailRecord.swift */; };
+		E5CC5B6729837F7D0096AB58 /* PDDateFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5CC5B6629837F7D0096AB58 /* PDDateFormatter.swift */; };
 		E5E4719F297FD4D600965E4C /* RxDataSources in Frameworks */ = {isa = PBXBuildFile; productRef = E5E4719E297FD4D600965E4C /* RxDataSources */; };
+		E5F3D4192984E1CC00E8DCDC /* Pomodoro.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = E5F3D4172984E1CC00E8DCDC /* Pomodoro.xcdatamodeld */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,7 +50,21 @@
 		E52E150A297FCE38007461CD /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		E52E150C297FCE80007461CD /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		E56A7AE7297791B30089737C /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		E57953852984039D008C56E7 /* StorageProvider+Add.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StorageProvider+Add.swift"; sourceTree = "<group>"; };
+		E5795387298408B9008C56E7 /* Date+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extension.swift"; sourceTree = "<group>"; };
+		E5795389298408D8008C56E7 /* DateComponents+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DateComponents+Extension.swift"; sourceTree = "<group>"; };
+		E579538B29840D84008C56E7 /* StorageProvider+fetch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StorageProvider+fetch.swift"; sourceTree = "<group>"; };
+		E579538D2984D762008C56E7 /* ReportRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportRecord.swift; sourceTree = "<group>"; };
 		E5CC5B4E297FDBE10096AB58 /* DurationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DurationViewController.swift; sourceTree = "<group>"; };
+		E5CC5B5029800EA80096AB58 /* Pomodoro.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Pomodoro.entitlements; sourceTree = "<group>"; };
+		E5CC5B52298016CD0096AB58 /* PDUbiquitousPropertyValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDUbiquitousPropertyValue.swift; sourceTree = "<group>"; };
+		E5CC5B552981309C0096AB58 /* UserDefaults+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserDefaults+Extension.swift"; sourceTree = "<group>"; };
+		E5CC5B57298130C00096AB58 /* UserDefaultValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultValue.swift; sourceTree = "<group>"; };
+		E5CC5B5C298133B90096AB58 /* StorageProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageProvider.swift; sourceTree = "<group>"; };
+		E5CC5B6229817F280096AB58 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
+		E5CC5B642982C0C60096AB58 /* DetailRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailRecord.swift; sourceTree = "<group>"; };
+		E5CC5B6629837F7D0096AB58 /* PDDateFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDDateFormatter.swift; sourceTree = "<group>"; };
+		E5F3D4182984E1CC00E8DCDC /* Pomodoro.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Pomodoro.xcdatamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -45,6 +72,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E5CC5B6329817F280096AB58 /* CloudKit.framework in Frameworks */,
 				E52E1509297FCDDC007461CD /* RxSwift in Frameworks */,
 				E5E4719F297FD4D600965E4C /* RxDataSources in Frameworks */,
 			);
@@ -58,6 +86,7 @@
 			children = (
 				BF98144F296716F20014925E /* Pomodoro */,
 				BF98144E296716F20014925E /* Products */,
+				E5CC5B6129817F280096AB58 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -72,10 +101,14 @@
 		BF98144F296716F20014925E /* Pomodoro */ = {
 			isa = PBXGroup;
 			children = (
+				E5F3D4162984E18200E8DCDC /* Helper */,
+				E5CC5B5B298133A60096AB58 /* Storage */,
+				BFA5216629672C5A0046CEEB /* Model */,
+				E5CC5B542981305C0096AB58 /* Extension */,
+				E5CC5B5029800EA80096AB58 /* Pomodoro.entitlements */,
 				BF981467296722EF0014925E /* Application */,
 				BF981466296722A70014925E /* View */,
 				BFA5216529672C4F0046CEEB /* ViewModel */,
-				BFA5216629672C5A0046CEEB /* Model */,
 				BF9814692967230A0014925E /* Resource */,
 				BF98145E296716F30014925E /* Info.plist */,
 			);
@@ -124,9 +157,58 @@
 		BFA5216629672C5A0046CEEB /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				E52E150A297FCE38007461CD /* Settings.swift */,
+				E5CC5B5A298131530096AB58 /* Settings */,
+				E5CC5B642982C0C60096AB58 /* DetailRecord.swift */,
+				E579538D2984D762008C56E7 /* ReportRecord.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		E5CC5B542981305C0096AB58 /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				E5CC5B552981309C0096AB58 /* UserDefaults+Extension.swift */,
+				E5795387298408B9008C56E7 /* Date+Extension.swift */,
+				E5795389298408D8008C56E7 /* DateComponents+Extension.swift */,
+			);
+			path = Extension;
+			sourceTree = "<group>";
+		};
+		E5CC5B5A298131530096AB58 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				E52E150A297FCE38007461CD /* Settings.swift */,
+				E5CC5B52298016CD0096AB58 /* PDUbiquitousPropertyValue.swift */,
+				E5CC5B57298130C00096AB58 /* UserDefaultValue.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		E5CC5B5B298133A60096AB58 /* Storage */ = {
+			isa = PBXGroup;
+			children = (
+				E5F3D4172984E1CC00E8DCDC /* Pomodoro.xcdatamodeld */,
+				E5CC5B5C298133B90096AB58 /* StorageProvider.swift */,
+				E57953852984039D008C56E7 /* StorageProvider+Add.swift */,
+				E579538B29840D84008C56E7 /* StorageProvider+fetch.swift */,
+			);
+			path = Storage;
+			sourceTree = "<group>";
+		};
+		E5CC5B6129817F280096AB58 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E5CC5B6229817F280096AB58 /* CloudKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		E5F3D4162984E18200E8DCDC /* Helper */ = {
+			isa = PBXGroup;
+			children = (
+				E5CC5B6629837F7D0096AB58 /* PDDateFormatter.swift */,
+			);
+			path = Helper;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -232,13 +314,25 @@
 			files = (
 				BF981455296716F20014925E /* TimerViewController.swift in Sources */,
 				BFA52160296723FB0046CEEB /* TabBarController.swift in Sources */,
+				E5CC5B5D298133B90096AB58 /* StorageProvider.swift in Sources */,
+				E5F3D4192984E1CC00E8DCDC /* Pomodoro.xcdatamodeld in Sources */,
 				BF981451296716F20014925E /* AppDelegate.swift in Sources */,
+				E5CC5B562981309C0096AB58 /* UserDefaults+Extension.swift in Sources */,
 				BF981453296716F20014925E /* SceneDelegate.swift in Sources */,
+				E5CC5B6729837F7D0096AB58 /* PDDateFormatter.swift in Sources */,
+				E579538C29840D84008C56E7 /* StorageProvider+fetch.swift in Sources */,
 				E52E150B297FCE38007461CD /* Settings.swift in Sources */,
+				E579538E2984D762008C56E7 /* ReportRecord.swift in Sources */,
 				BFA52164296725D10046CEEB /* RecordsViewController.swift in Sources */,
 				E56A7AE9297791B30089737C /* SettingsViewController.swift in Sources */,
 				E52E150D297FCE80007461CD /* SettingsViewModel.swift in Sources */,
+				E5CC5B652982C0C60096AB58 /* DetailRecord.swift in Sources */,
+				E57953862984039D008C56E7 /* StorageProvider+Add.swift in Sources */,
+				E579538A298408D8008C56E7 /* DateComponents+Extension.swift in Sources */,
+				E5CC5B53298016CD0096AB58 /* PDUbiquitousPropertyValue.swift in Sources */,
+				E5CC5B58298130C00096AB58 /* UserDefaultValue.swift in Sources */,
 				E5CC5B4F297FDBE10096AB58 /* DurationViewController.swift in Sources */,
+				E5795388298408B9008C56E7 /* Date+Extension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -383,9 +477,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Pomodoro/Pomodoro.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = LC7DCZXZ89;
+				DEVELOPMENT_TEAM = 865VWL9WN4;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Pomodoro/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -411,9 +506,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Pomodoro/Pomodoro.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = LC7DCZXZ89;
+				DEVELOPMENT_TEAM = 865VWL9WN4;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Pomodoro/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -488,6 +584,19 @@
 			productName = RxDataSources;
 		};
 /* End XCSwiftPackageProductDependency section */
+
+/* Begin XCVersionGroup section */
+		E5F3D4172984E1CC00E8DCDC /* Pomodoro.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				E5F3D4182984E1CC00E8DCDC /* Pomodoro.xcdatamodel */,
+			);
+			currentVersion = E5F3D4182984E1CC00E8DCDC /* Pomodoro.xcdatamodel */;
+			path = Pomodoro.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = BF981445296716F20014925E /* Project object */;
 }

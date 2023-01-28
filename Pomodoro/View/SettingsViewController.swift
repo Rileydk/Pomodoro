@@ -26,17 +26,33 @@ class SettingsViewController: UIViewController {
 
     // MARK: - Properties
     private let disposeBag = DisposeBag()
-    private var viewModel = SettingsViewModel()
+    private var viewModel: SettingsViewModel
 
     static let reuseIdentifier = "reuse-identifier"
+
+    init(viewModel: SettingsViewModel = SettingsViewModel()) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationItem.title = "Settings"
+        navigationController?.navigationBar.prefersLargeTitles = true
 
         configureTableView()
         configureDataSource()
         bindTableView()
+
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        viewModel.fetchConfiguration()
     }
 }
 
@@ -61,7 +77,7 @@ extension SettingsViewController {
                 let enableSwitch = SettingSwitch()
                 enableSwitch.item = itemIdentifier.item
                 enableSwitch.isOn = itemIdentifier.isOn
-                enableSwitch.addTarget(self, action: #selector(self!.toggleItem(_:)), for: .touchUpInside)
+                enableSwitch.addTarget(self, action: #selector(self!.toggleItem(_:)), for: .valueChanged)
                 cell.accessoryView = enableSwitch
             case .plain:
                 cell.accessoryView = nil
@@ -69,7 +85,7 @@ extension SettingsViewController {
             default:
                 switch itemIdentifier.item {
 
-                case .flowPeriod(_), .restPeriod(_):
+                case .flowDuration(_), .breakDuration(_):
                     if itemIdentifier.durations.count > 0 {
                         content.secondaryText = itemIdentifier.timesString
                     }
@@ -108,8 +124,10 @@ extension SettingsViewController {
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: SettingsViewController.reuseIdentifier)
     }
 
-    @objc func toggleItem(_ wifiEnabledSwitch: UISwitch) {
-        //        updateUI()
+    @objc func toggleItem(_ settingsEnabledSwitch: SettingSwitch) {
+        if let settingItem = settingsEnabledSwitch.item {
+            viewModel.updateConfiguration(item: settingItem, value: settingsEnabledSwitch.isOn)
+        }
     }
 }
 
@@ -127,23 +145,36 @@ extension SettingsViewController {
                     currentSnapshot.appendItems(items.filter { $0.settingCategory == settingCategory }, toSection: settingCategory)
                 }
 
-                vc.dataSource.apply(currentSnapshot, animatingDifferences: true)
+                vc.dataSource.apply(currentSnapshot, animatingDifferences: false)
             })
             .disposed(by: disposeBag)
-        viewModel.fetchConfiguration()
     }
 }
 
 extension SettingsViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if SettingCategory.allCases[indexPath.section] == .session {
-            let item = viewModel.items[Item.allCases[indexPath.item].value]
             switch Item.allCases[indexPath.item] {
-            case .flowPeriod, .restPeriod:
-                print(indexPath, SettingCategory.allCases[indexPath.section], Item.allCases[indexPath.item])
-                navigationController?.pushViewController((item?.item.destVC!)!, animated: false)
+            case .flowDuration, .breakDuration:
+                if let settingItem = viewModel.items[Item.allCases[indexPath.item].value],
+                   let vc = settingItem.item.destVC as? DurationViewController {
+                    vc.completion = { [unowned self] durations in
+                        print("durations = ", durations)
+                        if durations != [0, 0] && durations != [0] {
+                            self.viewModel.updateConfiguration(item: settingItem.item, value: durations)
+                        }
+                    }
+                    navigationController?.pushViewController(vc, animated: false)
+                }
+
             default:
                 break
+            }
+        } else if SettingCategory.allCases[indexPath.section] == .reset {
+            do {
+                Task { try await viewModel.resetData() }
+            } catch {
+                print("error ===")
             }
         }
     }

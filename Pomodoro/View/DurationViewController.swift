@@ -51,7 +51,16 @@ class DurationViewController: UIViewController {
     }
 
     var durationType: DurationType = .flowDuration
-    var duarations: [Int] = []
+    var durations: [Int] = [] {
+        didSet {
+            print("=======")
+            setupSelectedCell()
+
+        }
+    }
+
+    var completion: (([Int]) -> (Void))?
+    var selectedRow: [IndexPath] = []
 
     let tableView = UITableView(frame: .zero, style: .insetGrouped)
 
@@ -61,23 +70,34 @@ class DurationViewController: UIViewController {
         super.viewDidLoad()
         self.navigationItem.title = durationType.title
         configureTableView()
+        setupSelectedCell()
+
     }
 
     init(durationType: DurationType, item: Item) {
         self.durationType = durationType
         switch item {
 
-        case .flowPeriod(let durations), .restPeriod(let durations):
-            self.duarations = durations
+        case .flowDuration(let durations), .breakDuration(let durations):
+            self.durations = durations
         default:
             break
         }
-        print(duarations)
         super.init(nibName: nil, bundle: nil)
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    func setupSelectedCell() {
+        if durations != [0] && durations != [0, 0] {
+            selectedRow.removeAll()
+            durations.enumerated().forEach { index, duration in
+                selectedRow.append(IndexPath(item: (duration/5)-1, section: index))
+                print(selectedRow)
+            }
+        }
     }
 }
 
@@ -100,10 +120,6 @@ extension DurationViewController {
 
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: DurationViewController.reuseIdentifier)
     }
-
-    @objc func toggleItem(_ wifiEnabledSwitch: UISwitch) {
-        //        updateUI()
-    }
 }
 
 extension DurationViewController: UITableViewDataSource {
@@ -119,7 +135,7 @@ extension DurationViewController: UITableViewDataSource {
         cell.contentConfiguration = content
         cell.selectionStyle = .none
 
-        if [duarations[indexPath.section]].contains(currentValue) {
+        if [durations[indexPath.section]].contains(currentValue) {
             cell.accessoryType = UITableViewCell.AccessoryType.checkmark
         }
         return cell
@@ -136,4 +152,23 @@ extension DurationViewController: UITableViewDataSource {
 }
 
 extension DurationViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let cell = tableView.cellForRow(at: indexPath)
+        print(selectedRow[indexPath.section])
+        if selectedRow.count != 0,
+           let previousSelectedCell = tableView.cellForRow(at: selectedRow[indexPath.section]),
+           previousSelectedCell != cell {
+            cell!.accessoryType = .checkmark
+            previousSelectedCell.accessoryType = .none
+        }
+
+        switch durationType {
+        case .breakDuration:
+            durations[indexPath.section] = (indexPath.item + 1) * 5
+            self.completion?(durations)
+        case .flowDuration:
+            durations[indexPath.section] = (indexPath.item + 1) * 5
+            self.completion?(durations)
+        }
+    }
 }
