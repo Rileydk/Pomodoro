@@ -79,10 +79,10 @@ final class TimerViewController: UIViewController {
         return stackView
     }()
 
-    private let viewModel: TimerViewModel
+    let timerViewModel: TimerViewModel
 
     init(viewModel: TimerViewModel) {
-        self.viewModel = viewModel
+        self.timerViewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -94,6 +94,8 @@ final class TimerViewController: UIViewController {
         super.viewDidLoad()
         configureViews()
         configureViewModel()
+
+        addTimerLifeCycleObserver()
     }
 
     private func configureViews() {
@@ -106,8 +108,8 @@ final class TimerViewController: UIViewController {
         pauseButton.isHidden = true
         updateSessionView()
 
-        timerLabel.text = viewModel.timeLeftText
-        typeLabel.text = viewModel.countdownType.title
+        timerLabel.text = timerViewModel.timeLeftText
+        typeLabel.text = timerViewModel.countdownType.title
 
         let controlViewHeight: CGFloat = 38
         let controlViewTopDistance: CGFloat = 28
@@ -152,9 +154,9 @@ final class TimerViewController: UIViewController {
     private func updateSessionView() {
         sessionView.subviews.forEach { $0.removeFromSuperview() }
 
-        for index in 0 ..< viewModel.sessionImages.count {
+        for index in 0 ..< timerViewModel.sessionImages.count {
             let imageView = UIImageView()
-            imageView.image = viewModel.sessionImages[index]
+            imageView.image = timerViewModel.sessionImages[index]
             imageView.tintColor = .customInfoColor
             NSLayoutConstraint.activate([
                 imageView.widthAnchor.constraint(equalToConstant: 18),
@@ -166,35 +168,37 @@ final class TimerViewController: UIViewController {
     }
 
     private func configureViewModel() {
-        viewModel.timeLabelBinder = { [weak self] timeLeftText in
+        timerViewModel.timeLabelBinder = { [weak self] timeLeftText in
             self?.timerLabel.text = timeLeftText
         }
 
-        viewModel.countdownStateBinder = { [weak self] in
+        timerViewModel.countdownStateBinder = { [weak self] in
             guard let self = self else { return }
-            self.startButton.isHidden = self.viewModel.startButtonShouldHide
-            self.pauseButton.isHidden = self.viewModel.pauseButtonShouldHide
+            self.startButton.isHidden = self.timerViewModel.startButtonShouldHide
+            self.pauseButton.isHidden = self.timerViewModel.pauseButtonShouldHide
             self.controlView.subviews.forEach {
-                $0.isHidden = self.viewModel.resumeAndResetButtonsShouldHide
+                $0.isHidden = self.timerViewModel.resumeAndResetButtonsShouldHide
             }
 
             self.updateSessionView()
         }
 
-        viewModel.countdownTypeBinder = { [weak self] countdownType in
+        timerViewModel.countdownTypeBinder = { [weak self] countdownType in
             self?.typeLabel.text = countdownType.title
         }
     }
 
     @objc private func startTimer() {
-        viewModel.startTimer()
+        timerViewModel.startTimer()
     }
 
     @objc private func pauseTimer() {
-        viewModel.pauseTimer()
+        timerViewModel.pauseTimer()
     }
 
     @objc private func resetRound() {
-        viewModel.resetRound()
+        timerViewModel.resetRound()
     }
 }
+
+extension TimerViewController: TimerLifeCycleController {}

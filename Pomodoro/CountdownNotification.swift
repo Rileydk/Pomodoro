@@ -32,6 +32,8 @@ class CountdownNotification {
         type: TimerViewModel.CountdownType,
         startAt startDate: Date,
         durationBySeconds seconds: Int? = nil) {
+            removeAllPendingNotification()
+
             var trigger: UNCalendarNotificationTrigger?
 
             if let seconds = seconds {
@@ -62,5 +64,9 @@ class CountdownNotification {
                     print(error)
                 }
             }
+    }
+
+    static func removeAllPendingNotification() {
+        notificationCenter.removeAllPendingNotificationRequests()
     }
 }

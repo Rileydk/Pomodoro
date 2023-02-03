@@ -16,7 +16,7 @@ extension UserDefaults {
     }
 
     enum SessionPreferences {
-        static var rounds = 2
+        static var rounds = 4
         static var automaticallyStartBreak = false
         static var automaticallyStartNextRound = false
     }
@@ -25,6 +25,10 @@ extension UserDefaults {
         /// Used to store notification's identifier in case we need to remove it before triggered
         static let countdownFinished = "countdownFinished"
         static var startDate = "start date"
+    }
+
+    static func clearAllUserDefaults() {
+        UserDefaults.standard.set(nil, forKey: UserDefaults.NotificationKey.startDate)
     }
 }
 
@@ -71,7 +75,7 @@ public class TimerViewModel {
         static let filled = UIImage(systemName: "circle.fill")!
     }
 
-    private var sourceTimer: DispatchSourceTimer?
+    private var timer: DispatchSourceTimer?
 
     /// Used to pass the updated time left to View Controller
     var timeLabelBinder: ((String) -> Void)?
@@ -91,6 +95,8 @@ public class TimerViewModel {
             notifyOtherDevicesCountdownState()
             countdownStateBinder?()
             if countdownState == .finished {
+                UserDefaults.standard.removeObject(
+                    forKey: UserDefaults.NotificationKey.startDate)
                 pushToNextRound()
                 resetRound()
             }
@@ -233,14 +239,14 @@ public class TimerViewModel {
     // MARK: - Timer Control
     func startTimer() {
         let queue = DispatchQueue(label: "com.pomodoro.app.timer", qos: .userInitiated)
-        sourceTimer = DispatchSource.makeTimerSource(flags: .strict,queue: queue)
-        sourceTimer?.schedule(deadline: .now(), repeating: .seconds(1), leeway: .nanoseconds(0))
-        sourceTimer?.setEventHandler {
+        timer = DispatchSource.makeTimerSource(flags: .strict, queue: queue)
+        timer?.schedule(deadline: .now(), repeating: .seconds(1), leeway: .nanoseconds(0))
+        timer?.setEventHandler {
             DispatchQueue.main.async { [weak self] in
                 self?.counting()
             }
         }
-        sourceTimer?.activate()
+        timer?.activate()
 
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
@@ -248,20 +254,30 @@ public class TimerViewModel {
                 self.currentRound = 1
             }
             self.countdownState = .counting
-            self.notifyUserCountdownFinished(afterSeconds: self.settingTime * 60)
-            self.storePresentCountdownInfo(startDate: Date())
+            if UserDefaults.standard.object(
+                forKey: UserDefaults.NotificationKey.startDate) as? Date == nil {
+                self.notifyUserCountdownFinished(afterSeconds: self.settingTime * 60)
+                print("store start date", Date().displayedByTimezone)
+                self.storePresentCountdownInfo(startDate: Date())
+            }
         }
     }
 
     func pauseTimer() {
-        sourceTimer?.cancel()
+        timer?.cancel()
         countdownState = .paused
     }
 
     func resetRound() {
-        sourceTimer?.cancel()
+        timer?.cancel()
         countdownState = .notStart
         secondsPassed = 0
+    }
+
+    func clearTimer() {
+        timer?.cancel()
+        CountdownNotification.removeAllPendingNotification()
+        UserDefaults.clearAllUserDefaults()
     }
 
     private func pushToNextRound() {
@@ -312,6 +328,26 @@ public class TimerViewModel {
     private func storeCountdownRecord() {
         // print(#function)
         // 儲存完成計時的紀錄到 Core Data
+    }
+
+    func prepareForEnterBackground() {
+        timer?.cancel()
+    }
+
+    func prepareForBecomeActive() {
+        if let startDate = UserDefaults.standard.object(
+            forKey: UserDefaults.NotificationKey.startDate) as? Date,
+           countdownState == .counting {
+            secondsPassed = Int(Date() - startDate)
+
+            if timeLeft > 0 {
+                startTimer()
+            } else {
+                countdownState = .finished
+            }
+        } else {
+            print("=== No stored start date or not counting")
+        }
     }
 }
 
