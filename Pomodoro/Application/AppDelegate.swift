@@ -13,7 +13,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+            CountdownNotification.notificationCenter.delegate = self
+            CountdownNotification.notificationCenter.requestAuthorization(
+                options: [.sound, .alert]) { (granted, error) in
+                if granted {
+                    print("granted")
+                } else if let error = error {
+                    print(error)
+                }
+            }
         return true
     }
 
@@ -36,5 +44,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // this will be called shortly after application:didFinishLaunchingWithOptions.
         // Use this method to release any resources that
         // were specific to the discarded scenes, as they will not return.
+    }
+
+    func applicationWillTerminate(_ application: UIApplication) {}
+}
+
+extension AppDelegate: UNUserNotificationCenterDelegate {
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+
+            completionHandler([.sound, .banner])
     }
 }
