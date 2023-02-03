@@ -238,6 +238,29 @@ public class TimerViewModel {
 
     // MARK: - Timer Control
     func startTimer() {
+        activateTimer()
+
+        DispatchQueue.main.async {
+            if self.currentRound == 0 {
+                self.currentRound = 1
+            }
+            self.countdownState = .counting
+
+            // 每次計時完成、重置或 app 終止後，startDate 都會清空。
+            // 因此若 startDate 為 nil，表示是還在計時中，但因曾因暫停而移除通知，需要按剩餘時間重新開始計時，因此要重新設定本地通知和通知其他設備。
+            // 若不是 nil，表示只是曾退到背景又回到前景，計時持續進行，不需重新設定。
+            if UserDefaults.standard.object(
+                forKey: UserDefaults.NotificationKey.startDate) as? Date == nil {
+                // secondsPassed 有可能是 0，但若在暫停後繼續計時的情況，則已有經過的秒數。
+                // 以直接重新指派自身、以觸發 didSet 的方式計算正確的 timeLeft。
+                self.secondsPassed = self.secondsPassed
+                self.notifyUserCountdownFinished(afterSeconds: self.timeLeft)
+                self.storePresentCountdownInfo(startDate: Date())
+            }
+        }
+    }
+
+    private func activateTimer() {
         let queue = DispatchQueue(label: "com.pomodoro.app.timer", qos: .userInitiated)
         timer = DispatchSource.makeTimerSource(flags: .strict, queue: queue)
         timer?.schedule(deadline: .now(), repeating: .seconds(1), leeway: .nanoseconds(0))
@@ -247,35 +270,27 @@ public class TimerViewModel {
             }
         }
         timer?.activate()
-
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            if self.currentRound == 0 {
-                self.currentRound = 1
-            }
-            self.countdownState = .counting
-            if UserDefaults.standard.object(
-                forKey: UserDefaults.NotificationKey.startDate) as? Date == nil {
-                self.notifyUserCountdownFinished(afterSeconds: self.settingTime * 60)
-                print("store start date", Date().displayedByTimezone)
-                self.storePresentCountdownInfo(startDate: Date())
-            }
-        }
     }
 
     func pauseTimer() {
         timer?.cancel()
         countdownState = .paused
+        clearNotification()
     }
 
     func resetRound() {
         timer?.cancel()
+        // 若是計時過程中重置，而不是因為時間到歸零，還需要清空通知
+        // 目前尚未開發計時過程中重置的功能，預計未來擴充
+        if timeLeft != 0 {
+            clearNotification()
+        }
+
         countdownState = .notStart
         secondsPassed = 0
     }
 
-    func clearTimer() {
-        timer?.cancel()
+    func clearNotification() {
         CountdownNotification.removeAllPendingNotification()
         UserDefaults.clearAllUserDefaults()
     }

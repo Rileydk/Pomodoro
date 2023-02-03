@@ -45,6 +45,6 @@ extension TimerLifeCycleController {
     }
 
     func applicationWillTerminate(_ timer: TimerViewModel) {
-        timer.clearTimer()
+        timer.clearNotification()
     }
 }
