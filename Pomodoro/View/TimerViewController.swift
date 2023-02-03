@@ -105,11 +105,7 @@ final class TimerViewController: UIViewController {
         [resumeButton, resetButton]
             .forEach { controlView.addArrangedSubview($0) }
         controlView.subviews.forEach { $0.isHidden = true }
-        pauseButton.isHidden = true
         updateSessionView()
-
-        timerLabel.text = timerViewModel.timeLeftText
-        typeLabel.text = timerViewModel.countdownType.title
 
         let controlViewHeight: CGFloat = 38
         let controlViewTopDistance: CGFloat = 28
@@ -172,12 +168,13 @@ final class TimerViewController: UIViewController {
             self?.timerLabel.text = timeLeftText
         }
 
-        timerViewModel.countdownStateBinder = { [weak self] in
+        timerViewModel.countdownStateBinder = { [weak self] startButtonShouldHide, pauseButtonShouldHide, resumeAndResetButtonsShouldHide in
+
             guard let self = self else { return }
-            self.startButton.isHidden = self.timerViewModel.startButtonShouldHide
-            self.pauseButton.isHidden = self.timerViewModel.pauseButtonShouldHide
+            self.startButton.isHidden = startButtonShouldHide
+            self.pauseButton.isHidden = pauseButtonShouldHide
             self.controlView.subviews.forEach {
-                $0.isHidden = self.timerViewModel.resumeAndResetButtonsShouldHide
+                $0.isHidden = resumeAndResetButtonsShouldHide
             }
 
             self.updateSessionView()

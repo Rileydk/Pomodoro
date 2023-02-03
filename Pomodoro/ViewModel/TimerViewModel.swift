@@ -78,22 +78,35 @@ public class TimerViewModel {
     private var timer: DispatchSourceTimer?
 
     /// Used to pass the updated time left to View Controller
-    var timeLabelBinder: ((String) -> Void)?
+    var timeLabelBinder: ((String) -> Void)? {
+        didSet {
+            timeLabelBinder?(timeLeftText)
+        }
+    }
 
     /// Used to pass the countdown state to View Controller
-    var countdownStateBinder: (() -> Void)?
+    var countdownStateBinder: ((Bool, Bool, Bool) -> Void)? {
+        didSet {
+            countdownStateBinder?(startButtonShouldHide,
+                                  pauseButtonShouldHide,
+                                  resumeAndResetButtonsShouldHide)
+        }
+    }
 
     /// Used to pass the countdown type to View Controller
-    var countdownTypeBinder: ((CountdownType) -> Void)?
-
-    /// Used to pass the session state to View Controller
-    var sessionBinder: (() -> Void)?
+    var countdownTypeBinder: ((CountdownType) -> Void)? {
+        didSet {
+            countdownTypeBinder?(countdownType)
+        }
+    }
 
     /// Represent the state of timer
     private var countdownState: CountdownState = .notStart {
         didSet {
             notifyOtherDevicesCountdownState()
-            countdownStateBinder?()
+            countdownStateBinder?(startButtonShouldHide,
+                                  pauseButtonShouldHide,
+                                  resumeAndResetButtonsShouldHide)
             if countdownState == .finished {
                 UserDefaults.standard.removeObject(
                     forKey: UserDefaults.NotificationKey.startDate)
@@ -104,7 +117,7 @@ public class TimerViewModel {
     }
 
     /// Represent the type of counting
-    var countdownType: CountdownType = .focus {
+    private var countdownType: CountdownType = .focus {
         didSet {
             countdownTypeBinder?(countdownType)
         }
@@ -149,7 +162,7 @@ public class TimerViewModel {
     }
 
     /// Time left that should display on timer page
-    var timeLeftText = {
+    private var timeLeftText = {
         let focusTimeLength = UserDefaults.TimeLengthPreferences.focus.toSeconds
         return """
                 \(focusTimeLength.remainMinutes.timeTextified):\
@@ -167,11 +180,7 @@ public class TimerViewModel {
     }
 
     /// Present round in the present session
-    private var currentRound = 0 {
-        didSet {
-            sessionBinder?()
-        }
-    }
+    private var currentRound = 0
 
     private var isLastRound: Bool {
         currentRound == sessionRounds
@@ -209,7 +218,7 @@ public class TimerViewModel {
         UserDefaults.SessionPreferences.automaticallyStartNextRound
     }
 
-    var startButtonShouldHide: Bool {
+    private var startButtonShouldHide: Bool {
         switch countdownState {
         case .counting, .paused,
              .notStart where automaticallyStartBreak:
@@ -219,7 +228,7 @@ public class TimerViewModel {
         }
     }
 
-    var pauseButtonShouldHide: Bool {
+    private var pauseButtonShouldHide: Bool {
         switch countdownState {
         case .counting,
              .notStart where automaticallyStartBreak:
@@ -229,7 +238,7 @@ public class TimerViewModel {
         }
     }
 
-    var resumeAndResetButtonsShouldHide: Bool {
+    private var resumeAndResetButtonsShouldHide: Bool {
         switch countdownState {
         case .paused: return false
         default: return true
