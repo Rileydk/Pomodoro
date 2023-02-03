@@ -33,6 +33,10 @@ extension UserDefaults {
 }
 
 public class TimerViewModel {
+    typealias ButtonsStates = (startButtonShouldHide: Bool,
+                               pauseButtonShouldHide: Bool,
+                               resumeAndResetButtonsShouldHide: Bool)
+
     private enum CountdownState {
         /// Round not started yet
         case notStart
@@ -85,11 +89,12 @@ public class TimerViewModel {
     }
 
     /// Used to pass the countdown state to View Controller
-    var countdownStateBinder: ((Bool, Bool, Bool) -> Void)? {
+    var countdownStateBinder: ((ButtonsStates) -> Void)? {
         didSet {
-            countdownStateBinder?(startButtonShouldHide,
+            let buttonsStates = (startButtonShouldHide,
                                   pauseButtonShouldHide,
                                   resumeAndResetButtonsShouldHide)
+            countdownStateBinder?(buttonsStates)
         }
     }
 
@@ -104,9 +109,10 @@ public class TimerViewModel {
     private var countdownState: CountdownState = .notStart {
         didSet {
             notifyOtherDevicesCountdownState()
-            countdownStateBinder?(startButtonShouldHide,
-                                  pauseButtonShouldHide,
-                                  resumeAndResetButtonsShouldHide)
+            let buttonsStates = (startButtonShouldHide,
+                                 pauseButtonShouldHide,
+                                 resumeAndResetButtonsShouldHide)
+            countdownStateBinder?(buttonsStates)
             if countdownState == .finished {
                 UserDefaults.standard.removeObject(
                     forKey: UserDefaults.NotificationKey.startDate)

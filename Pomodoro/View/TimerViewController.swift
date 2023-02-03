@@ -168,13 +168,12 @@ final class TimerViewController: UIViewController {
             self?.timerLabel.text = timeLeftText
         }
 
-        timerViewModel.countdownStateBinder = { [weak self] startButtonShouldHide, pauseButtonShouldHide, resumeAndResetButtonsShouldHide in
-
+        timerViewModel.countdownStateBinder = { [weak self] buttonsStates in
             guard let self = self else { return }
-            self.startButton.isHidden = startButtonShouldHide
-            self.pauseButton.isHidden = pauseButtonShouldHide
+            self.startButton.isHidden = buttonsStates.startButtonShouldHide
+            self.pauseButton.isHidden = buttonsStates.pauseButtonShouldHide
             self.controlView.subviews.forEach {
-                $0.isHidden = resumeAndResetButtonsShouldHide
+                $0.isHidden = buttonsStates.resumeAndResetButtonsShouldHide
             }
 
             self.updateSessionView()
