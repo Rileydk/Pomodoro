@@ -96,7 +96,7 @@ extension StorageProvider {
     }
 
     func fetchMonthlyRecord(requestDate: Date, reportType: ReportType) async throws -> [ReportRecord] {
-        let requestDC = requestDate.customDateComponents()
+        let requestDC = requestDate.localDate().customDateComponents()
         let context = persistentContainer.viewContext
 
         let fetchRequest = MonthlyReport.fetchRequest()
@@ -113,7 +113,7 @@ extension StorageProvider {
     }
 
     func fetchDailyReport(requestDate: Date, reportType: ReportType) async throws -> [ReportRecord] {
-        let requestDC = requestDate.customDateComponents()
+        let requestDC = requestDate.localDate().customDateComponents()
         let context = persistentContainer.viewContext
 
         let fetchRequest = DailyReport.fetchRequest()
