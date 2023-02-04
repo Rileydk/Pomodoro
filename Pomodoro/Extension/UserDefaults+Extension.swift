@@ -8,6 +8,6 @@
 import Foundation
 
 extension UserDefaults {
-    @UserDefaultValue(key: "currentDeviceToken", defaultValue: "")
+    @UserDefaultValue(userDefaultKey: "currentDeviceToken", defaultValue: "")
     static var currentDeviceToken: String
 }

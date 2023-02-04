@@ -6,22 +6,16 @@
 //
 
 import Foundation
+import CoreData
 extension StorageProvider {
-    
-    
+
     private func fetchRestRecords(requestDate: Date) async throws -> [DetailRecord] {
         let localDateComponents = requestDate.localDate().customDateComponents()
-        print(localDateComponents.year!,
-              localDateComponents.month!,
-              localDateComponents.day!)
+
         let context = persistentContainer.viewContext
         let fetchRequest = Rest.fetchRequest()
-        fetchRequest.predicate = NSPredicate(
-            format: "(startYear = %d) AND (startMonth = %d) AND (startDay = %d)",
-            localDateComponents.year!,
-            localDateComponents.month!,
-            localDateComponents.day!
-        )
+        fetchRequest.predicate = dateFilter(dateComponents: localDateComponents, reportType: .rest)
+
         fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \Rest.startTimestamp, ascending: false)]
 
         let results = try context.fetch(fetchRequest) as [Rest]
@@ -36,12 +30,8 @@ extension StorageProvider {
 
         let context = persistentContainer.viewContext
         let fetchRequest = Focus.fetchRequest()
-        fetchRequest.predicate = NSPredicate(
-            format: "(startYear = %d) AND (startMonth = %d) AND (startDay = %d)",
-            localDateComponents.year!,
-            localDateComponents.month!,
-            localDateComponents.day!
-        )
+        fetchRequest.predicate = dateFilter(dateComponents: localDateComponents, reportType: .focus)
+
         fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \Focus.startTimestamp, ascending: false)]
 
         let results = try context.fetch(fetchRequest) as [Focus]
@@ -50,7 +40,27 @@ extension StorageProvider {
 
         return records
     }
-    
+
+    func fetchData<T>(
+        entity: T.Type,
+        requestDate: Date
+    ) async throws -> [DetailRecord] where T: RestFocus, T: NSManagedObject {
+
+        let localDateComponents = requestDate.localDate().customDateComponents()
+
+        let context = persistentContainer.viewContext
+        let fetchRequest = T.fetchRequest()
+        fetchRequest.predicate = dateFilter(dateComponents: localDateComponents, reportType: .focus)
+
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "startTimestamp", ascending: false)]
+
+        let results = try context.fetch(fetchRequest) as! [Focus]
+
+        let records = results.map { DetailRecord(record: $0) }
+
+        return records
+    }
+
     func fetchDetailTimeByDay(requestDate: Date, recordType: RecordType) async throws -> [DetailRecord] {
         if recordType == .rest {
             return try await fetchRestRecords(requestDate: requestDate)
@@ -60,16 +70,16 @@ extension StorageProvider {
     }
 
     func fetchWeeklyRecordByWeek(requestDate: Date, reportType: ReportType) async throws -> [ReportRecord] {
-        let requestDC = requestDate.customDateComponents()
+        let requestDC = requestDate.localDate().customDateComponents()
         let context = persistentContainer.viewContext
 
         let fetchRequest = WeeklyReport.fetchRequest()
 
         switch reportType {
         case .monthly:
-            fetchRequest.predicate = NSPredicate(format: "(year = %d) AND (month = %d)", requestDC.year!, requestDC.month!)
+            fetchRequest.predicate = dateFilter(dateComponents: requestDC, reportType: .monthly)
         case .weekly:
-            fetchRequest.predicate = NSPredicate(format: "(year = %d) AND (week = %@)", requestDC.year!, requestDC.weekOfYear!)
+            fetchRequest.predicate = dateFilter(dateComponents: requestDC, reportType: .weekly)
         default:
             break
         }
@@ -90,7 +100,7 @@ extension StorageProvider {
         let context = persistentContainer.viewContext
 
         let fetchRequest = MonthlyReport.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "(year = %d) AND (month = %d)", requestDC.year!, requestDC.month!)
+        fetchRequest.predicate = dateFilter(dateComponents: requestDC, reportType: .monthly)
         fetchRequest.sortDescriptors = [
             NSSortDescriptor(keyPath: \MonthlyReport.date, ascending: false)
         ]
@@ -110,9 +120,9 @@ extension StorageProvider {
 
         switch reportType {
         case .monthly:
-            fetchRequest.predicate = NSPredicate(format: "(year = %d) AND (month = %d)", requestDC.year!, requestDC.month!)
+            fetchRequest.predicate = dateFilter(dateComponents: requestDC, reportType: .monthly)
         case .weekly:
-            fetchRequest.predicate = NSPredicate(format: "(year = %d) AND (weekOfYear = %d)", requestDC.year!, requestDC.weekOfYear!)
+            fetchRequest.predicate = dateFilter(dateComponents: requestDC, reportType: .weekly)
         default:
             break
         }
@@ -128,5 +138,3 @@ extension StorageProvider {
         return records
     }
 }
-
-

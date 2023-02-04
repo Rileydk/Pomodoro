@@ -10,16 +10,16 @@ import Foundation
 @propertyWrapper
 struct UserDefaultValue<Value> {
     let userDefault = UserDefaults.standard
-    let key: String
+    let userDefaultKey: String
     let defaultValue: Value
 
     var wrappedValue: Value {
         get {
-            userDefault.value(forKey: key) as? Value ?? defaultValue
+            userDefault.value(forKey: userDefaultKey) as? Value ?? defaultValue
         }
 
         set {
-            userDefault.set(newValue, forKey: key)
+            userDefault.set(newValue, forKey: userDefaultKey)
         }
     }
 }

@@ -8,7 +8,7 @@
 import Foundation
 
 extension DateComponents {
-    func dateInterval(to: DateComponents) -> Int32 {
-        return Int32(Calendar.current.dateComponents([.minute], from: self, to: to).minute!)
+    func dateInterval(toDateComponents: DateComponents) -> Int32 {
+        return Int32(Calendar.current.dateComponents([.minute], from: self, to: toDateComponents).minute!)
     }
 }

@@ -10,7 +10,7 @@ import Foundation
 class PDDateFormatter {
     static let shared = PDDateFormatter()
 
-    private init(){}
+    private init() {}
 
     let formatter = DateComponentsFormatter()
 

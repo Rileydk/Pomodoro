@@ -6,13 +6,12 @@
 //
 
 import Foundation
-
 struct ReportRecord {
     let year: Int16
-    var month: Int16? = nil
-    var weekOfYear: Int16? = nil
-    var day: Int16? = nil
-    var date: Date? = nil
+    var month: Int16?
+    var weekOfYear: Int16?
+    var dayOfMonth: Int16?
+    var date: Date?
     let focusTotal: Int32
     let restTotal: Int32
 }
@@ -21,7 +20,7 @@ extension ReportRecord {
     init(dailyReport: DailyReport) {
         self.year = dailyReport.year
         self.month = dailyReport.month
-        self.day = dailyReport.day
+        self.dayOfMonth = dailyReport.dayOfMonth
         self.weekOfYear = dailyReport.weekOfYear
         self.date = dailyReport.date
         self.focusTotal = dailyReport.focusTotal
@@ -64,4 +63,4 @@ enum ReportType: CaseIterable {
             return "Rest"
         }
     }
-    }
+}

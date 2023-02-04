@@ -18,8 +18,6 @@ protocol FetchedResultsProviding: NSFetchedResultsControllerDelegate {
 }
 
 extension FetchedResultsProviding {
-
-
     func performFetch() {
         try? fetchedResultsController.performFetch()
     }
@@ -35,13 +33,9 @@ extension FetchedResultsProviding {
         fetchRequest.sortDescriptors = sortDescriptors
         performFetch()
     }
-
-
 }
 
-
 class SettingsViewModel: NSObject, FetchedResultsProviding {
-
 
     let context: NSManagedObjectContext
     lazy var fetchedResultsController: NSFetchedResultsController<Rest> = {
@@ -63,15 +57,36 @@ class SettingsViewModel: NSObject, FetchedResultsProviding {
     var settingItems = PublishSubject<[SettingItem]>()
     var storageProvider: StorageProvider = StorageProvider.shared
     var items: [String: SettingItem] = [
-        "flowDuration": SettingItem(item: .flowDuration(SettingsValue.flowDuration), settingCategory: .session, durations: SettingsValue.flowDuration),
-        "breakDuration": SettingItem(item: .breakDuration(SettingsValue.breakDuration), settingCategory: .session, durations: SettingsValue.breakDuration),
-        "autoStartBreak": SettingItem(item: .autoStartBreak, settingCategory: .session, isOn: SettingsValue.autoStartBreak),
-        "autoStartFlow": SettingItem(item: .autoStartFlow, settingCategory: .session, isOn: SettingsValue.autoStartFlow),
-        "notification": SettingItem(item: .notification, settingCategory: .general, isOn: SettingsValue.notification),
-        "appleHealth": SettingItem(item: .appleHealth, settingCategory: .general, isOn: SettingsValue.appleHealth),
-        "metronome": SettingItem(item: .metronome, settingCategory: .general, isOn: SettingsValue.metronome),
+        "flowDuration": SettingItem(
+            item: .flowDuration(SettingsValue.flowDuration),
+            settingCategory: .session,
+            durations: SettingsValue.flowDuration),
+        "breakDuration": SettingItem(
+            item: .breakDuration(SettingsValue.breakDuration),
+            settingCategory: .session,
+            durations: SettingsValue.breakDuration),
+        "autoStartBreak": SettingItem(
+            item: .autoStartBreak,
+            settingCategory: .session,
+            isOn: SettingsValue.autoStartBreak),
+        "autoStartFlow": SettingItem(
+            item: .autoStartFlow,
+            settingCategory: .session,
+            isOn: SettingsValue.autoStartFlow),
+        "notification": SettingItem(
+            item: .notification,
+            settingCategory: .general,
+            isOn: SettingsValue.notification),
+        "appleHealth": SettingItem(
+            item: .appleHealth,
+            settingCategory: .general,
+            isOn: SettingsValue.appleHealth),
+        "metronome": SettingItem(
+            item: .metronome,
+            settingCategory: .general,
+            isOn: SettingsValue.metronome),
         "about": SettingItem(item: .about, settingCategory: .about),
-        "how": SettingItem(item: .how, settingCategory: .about),
+        "how": SettingItem(item: .howToUse, settingCategory: .about),
         "reset": SettingItem(item: .reset, settingCategory: .reset)
     ]
 
@@ -95,16 +110,16 @@ class SettingsViewModel: NSObject, FetchedResultsProviding {
             let durations = value as! [Int]
             items[item.value]?.durations = value as! [Int]
             items[item.value]?.item = .flowDuration(durations)
-            SettingsValue.setCloudKeyValue(key: item.value, value: value as! [Int])
+            SettingsValue.setCloudKeyValue(propertyKey: item.value, value: value as! [Int])
         case .breakDuration(_):
             let durations = value as! [Int]
             items[item.value]?.durations = value as! [Int]
             items[item.value]?.item = .breakDuration(durations)
-            SettingsValue.setCloudKeyValue(key: item.value, value: value as! [Int])
+            SettingsValue.setCloudKeyValue(propertyKey: item.value, value: value as! [Int])
         default :
             print(item.value, value)
             items[item.value]?.isOn = value as! Bool
-            SettingsValue.setCloudKeyValue(key: item.value, value: value as! Bool)
+            SettingsValue.setCloudKeyValue(propertyKey: item.value, value: value as! Bool)
         }
     }
 

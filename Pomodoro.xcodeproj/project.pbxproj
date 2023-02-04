@@ -18,6 +18,7 @@
 		E52E1509297FCDDC007461CD /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E52E1508297FCDDC007461CD /* RxSwift */; };
 		E52E150B297FCE38007461CD /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E52E150A297FCE38007461CD /* Settings.swift */; };
 		E52E150D297FCE80007461CD /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E52E150C297FCE80007461CD /* SettingsViewModel.swift */; };
+		E5326085298E2F29009692BA /* DateFormatter+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5326084298E2F29009692BA /* DateFormatter+Extension.swift */; };
 		E56A7AE9297791B30089737C /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E56A7AE7297791B30089737C /* SettingsViewController.swift */; };
 		E57953862984039D008C56E7 /* StorageProvider+Add.swift in Sources */ = {isa = PBXBuildFile; fileRef = E57953852984039D008C56E7 /* StorageProvider+Add.swift */; };
 		E5795388298408B9008C56E7 /* Date+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5795387298408B9008C56E7 /* Date+Extension.swift */; };
@@ -49,6 +50,7 @@
 		BFA52163296725D10046CEEB /* RecordsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordsViewController.swift; sourceTree = "<group>"; };
 		E52E150A297FCE38007461CD /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		E52E150C297FCE80007461CD /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
+		E5326084298E2F29009692BA /* DateFormatter+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DateFormatter+Extension.swift"; sourceTree = "<group>"; };
 		E56A7AE7297791B30089737C /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		E57953852984039D008C56E7 /* StorageProvider+Add.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StorageProvider+Add.swift"; sourceTree = "<group>"; };
 		E5795387298408B9008C56E7 /* Date+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extension.swift"; sourceTree = "<group>"; };
@@ -170,6 +172,7 @@
 				E5CC5B552981309C0096AB58 /* UserDefaults+Extension.swift */,
 				E5795387298408B9008C56E7 /* Date+Extension.swift */,
 				E5795389298408D8008C56E7 /* DateComponents+Extension.swift */,
+				E5326084298E2F29009692BA /* DateFormatter+Extension.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -332,6 +335,7 @@
 				E5CC5B53298016CD0096AB58 /* PDUbiquitousPropertyValue.swift in Sources */,
 				E5CC5B58298130C00096AB58 /* UserDefaultValue.swift in Sources */,
 				E5CC5B4F297FDBE10096AB58 /* DurationViewController.swift in Sources */,
+				E5326085298E2F29009692BA /* DateFormatter+Extension.swift in Sources */,
 				E5795388298408B9008C56E7 /* Date+Extension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

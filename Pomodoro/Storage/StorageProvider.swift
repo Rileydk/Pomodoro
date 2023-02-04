@@ -46,7 +46,9 @@ class StorageProvider {
                 return
             }
 
-            _privatePersistentStore = persistentContainer.persistentStoreCoordinator.persistentStore(for: storeURL)
+            _privatePersistentStore = persistentContainer.persistentStoreCoordinator.persistentStore(
+                for: storeURL
+            )
 
             print("#\(#function): Load persistent store", storeDescription)
         }
@@ -98,37 +100,16 @@ class StorageProvider {
         return context
     }
 
-    func mergeTransactions(_ transactions: [NSPersistentHistoryTransaction], to context: NSManagedObjectContext) {
+    func mergeTransactions(
+        _ transactions: [NSPersistentHistoryTransaction],
+        to context: NSManagedObjectContext
+    ) {
         context.perform {
             transactions.forEach { context.mergeChanges(fromContextDidSave: $0.objectIDNotification()) }
         }
     }
 }
 
-
-//enum Result {
-//    case Rest(Rest)
-//    case Focus(Focus)
-//    case MonthlyReport(MonthlyReport)
-//    case weeklyReport(WeeklyReport)
-//    case none
-//}
-//
-//func make(context: NSManagedObjectContext, recordType: RecordType) -> Result {
-//    switch recordType {
-//    case .rest:
-//        return .Rest(Rest(context: context))
-//    case .focus:
-//        return .Focus(Focus(context: context))
-//    case .monthlyReport:
-//        return .MonthlyReport(MonthlyReport(context: context))
-//    case .weeklyReport:
-//        return .weeklyReport(WeeklyReport(context: context))
-//    }
-//}
-
 enum CoreDataError: Error {
     case notFound
 }
-
-

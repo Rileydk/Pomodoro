@@ -15,14 +15,26 @@ extension StorageProvider {
         case focus
     }
 
-    private func genDataComponents(startTimestamp: Date, endTimestamp: Date) -> (DateComponents, DetailRecord) {
+    private func genDataComponents(
+        startTimestamp: Date,
+        endTimestamp: Date
+    ) -> (DateComponents, DetailRecord) {
         let startLocalTimestamp = startTimestamp.localDate()
         let startComponents = startTimestamp.customDateComponents()
         let endComponents = endTimestamp.customDateComponents()
         let startLocalComponents = startLocalTimestamp.customDateComponents()
-        let durationMinutes = startComponents.dateInterval(to: endComponents)
+        let durationMinutes = startComponents.dateInterval(toDateComponents: endComponents)
 
-        let detailRecord = DetailRecord(startTimestamp: startTimestamp, endTimestamp: endTimestamp, startLocalTimestamp: startLocalTimestamp, startYear: Int16(startLocalComponents.year!), startMonth: Int16(startLocalComponents.month!), startWeekOfYear: Int16(startLocalComponents.weekOfYear!), startDay: Int16(startLocalComponents.day!), durationMinutes: durationMinutes)
+        let detailRecord = DetailRecord(
+            startTimestamp: startTimestamp,
+            endTimestamp: endTimestamp,
+            startLocalTimestamp: startLocalTimestamp,
+            startYear: Int16(startLocalComponents.year!),
+            startMonth: Int16(startLocalComponents.month!),
+            startWeekOfYear: Int16(startLocalComponents.weekOfYear!),
+            startDay: Int16(startLocalComponents.day!),
+            durationMinutes: durationMinutes
+        )
 
         return (startLocalComponents, detailRecord)
     }
@@ -65,20 +77,48 @@ extension StorageProvider {
         }
     }
 
-    func addRecord(startTimestamp: Date, endTimestamp: Date, recordType: RecordType, context: NSManagedObjectContext? = nil) async throws {
+    func addRecord(
+        startTimestamp: Date,
+        endTimestamp: Date,
+        recordType: RecordType,
+        context: NSManagedObjectContext? = nil
+    ) async throws {
         let context = context ?? newTaskContext()
-        let (startLocalComponents, detailRecord) = genDataComponents(startTimestamp: startTimestamp, endTimestamp: endTimestamp)
+        let (startLocalComponents, detailRecord) = genDataComponents(
+            startTimestamp: startTimestamp,
+            endTimestamp: endTimestamp
+        )
 
         switch recordType {
         case .rest:
-            try await addRestRecord(context: context, startLocalComponents: startLocalComponents, detailRecord: detailRecord)
+            try await addRestRecord(
+                context: context,
+                startLocalComponents: startLocalComponents,
+                detailRecord: detailRecord
+            )
         case .focus:
-            try await addFocusRecord(context: context, startLocalComponents: startLocalComponents, detailRecord: detailRecord)
+            try await addFocusRecord(
+                context: context,
+                startLocalComponents: startLocalComponents,
+                detailRecord: detailRecord
+            )
         }
         // report
-        await upsertDailyReport(startComponents: startLocalComponents, detailRecord: detailRecord, recordType: recordType, context: context)
-        await upsertWeekReport(startComponents: startLocalComponents, detailRecord: detailRecord, recordType: recordType, context: context)
-        await upsertMonthlyReport(startComponents: startLocalComponents, detailRecord: detailRecord, recordType: recordType, context: context)
+        await upsertDailyReport(
+            startComponents: startLocalComponents,
+            detailRecord: detailRecord,
+            recordType: recordType,
+            context: context)
+        await upsertWeekReport(
+            startComponents: startLocalComponents,
+            detailRecord: detailRecord,
+            recordType: recordType,
+            context: context)
+        await upsertMonthlyReport(
+            startComponents: startLocalComponents,
+            detailRecord: detailRecord,
+            recordType: recordType,
+            context: context)
     }
 
     func upsertMonthlyReport(
@@ -90,10 +130,11 @@ extension StorageProvider {
         let context = context ?? newTaskContext()
 
         let fetchRequest = MonthlyReport.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "year = %@ and month = %@", String(describing: startComponents.year!), String(describing: startComponents.month!))
+        fetchRequest.predicate = dateFilter(dateComponents: startComponents, reportType: .monthly)
+
         do {
             let records = try context.fetch(fetchRequest)
-            if records.count == 0 {
+            if records.isEmpty {
                 let monthlyReport = MonthlyReport(context: context)
                 monthlyReport.month = detailRecord.startMonth
                 monthlyReport.year = detailRecord.startYear
@@ -112,9 +153,9 @@ extension StorageProvider {
                 }
                 switch recordType {
                 case .rest:
-                    item.restTotal = item.restTotal + detailRecord.durationMinutes
+                    item.restTotal += detailRecord.durationMinutes
                 case .focus:
-                    item.focusTotal = item.focusTotal + detailRecord.durationMinutes
+                    item.focusTotal += detailRecord.durationMinutes
                 }
             }
             try context.save()
@@ -133,13 +174,15 @@ extension StorageProvider {
         let context = context ?? newTaskContext()
 
         let fetchRequest = WeeklyReport.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "year = %@ and weekOfYear = %@", String(describing: startComponents.year!), String(describing: startComponents.weekOfYear!))
+        fetchRequest.predicate = dateFilter(dateComponents: startComponents, reportType: .weekly)
+
         do {
             let records = try context.fetch(fetchRequest)
-            if records.count == 0 {
+            if records.isEmpty {
                 let weeklyReport = WeeklyReport(context: context)
                 weeklyReport.weekOfYear = detailRecord.startWeekOfYear
                 weeklyReport.year = detailRecord.startYear
+                weeklyReport.month = detailRecord.startMonth
                 weeklyReport.date = detailRecord.startLocalTimestamp.startOfWeek()
                 switch recordType {
                 case .rest:
@@ -155,9 +198,9 @@ extension StorageProvider {
                 }
                 switch recordType {
                 case .rest:
-                    item.restTotal = item.restTotal + detailRecord.durationMinutes
+                    item.restTotal += detailRecord.durationMinutes
                 case .focus:
-                    item.focusTotal = item.focusTotal + detailRecord.durationMinutes
+                    item.focusTotal += detailRecord.durationMinutes
                 }
             }
             try context.save()
@@ -176,18 +219,13 @@ extension StorageProvider {
         let context = context ?? newTaskContext()
 
         let fetchRequest = DailyReport.fetchRequest()
-        fetchRequest.predicate = NSPredicate(
-            format: "year = %@ and month = %@ and day = %@",
-            String(describing: startComponents.year!),
-            String(describing: startComponents.month!),
-            String(describing: startComponents.day!)
-        )
+        fetchRequest.predicate = dateFilter(dateComponents: startComponents, reportType: .daily)
 
         do {
             let records = try context.fetch(fetchRequest)
-            if records.count == 0 {
+            if records.isEmpty {
                 let dailyRecord = DailyReport(context: context)
-                dailyRecord.day = detailRecord.startDay
+                dailyRecord.dayOfMonth = detailRecord.startDay
                 dailyRecord.month = detailRecord.startMonth
                 dailyRecord.weekOfYear = detailRecord.startWeekOfYear
                 dailyRecord.year = detailRecord.startYear
@@ -207,9 +245,9 @@ extension StorageProvider {
                 }
                 switch recordType {
                 case .rest:
-                    item.restTotal = item.restTotal + detailRecord.durationMinutes
+                    item.restTotal += detailRecord.durationMinutes
                 case .focus:
-                    item.focusTotal = item.focusTotal + detailRecord.durationMinutes
+                    item.focusTotal += detailRecord.durationMinutes
                 }
             }
             try context.save()
@@ -253,4 +291,35 @@ extension StorageProvider {
     }
 }
 
-
+extension StorageProvider {
+    func dateFilter(dateComponents: DateComponents, reportType: ReportType) -> NSPredicate {
+        switch reportType {
+        case .weekly:
+            return NSPredicate(
+                format: "year = %d and weekOfYear = %d",
+                dateComponents.year!,
+                dateComponents.weekOfYear!
+            )
+        case .monthly:
+            return  NSPredicate(
+                format: "(year = %d) AND (month = %d)",
+                dateComponents.year!,
+                dateComponents.month!
+            )
+        case .daily:
+            return NSPredicate(
+                format: "year = %d and month = %d and dayOfMonth = %d",
+                dateComponents.year!,
+                dateComponents.month!,
+                dateComponents.day!
+            )
+        case .focus, .rest:
+            return NSPredicate(
+                format: "(startYear = %d) AND (startMonth = %d) AND (startDay = %d)",
+                dateComponents.year!,
+                dateComponents.month!,
+                dateComponents.day!
+            )
+        }
+    }
+}

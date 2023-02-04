@@ -86,7 +86,7 @@ extension SettingsViewController {
                 switch itemIdentifier.item {
 
                 case .flowDuration(_), .breakDuration(_):
-                    if itemIdentifier.durations.count > 0 {
+                    if !itemIdentifier.durations.isEmpty {
                         content.secondaryText = itemIdentifier.timesString
                     }
                 default:
@@ -135,7 +135,7 @@ extension SettingsViewController {
     func bindTableView() {
         viewModel.settingItems
             .withUnretained(self)
-            .bind(onNext: { (vc, items) in
+            .bind(onNext: { (viewController, items) in
 
                 var currentSnapshot = SettingSnapshot()
 
@@ -145,7 +145,7 @@ extension SettingsViewController {
                     currentSnapshot.appendItems(items.filter { $0.settingCategory == settingCategory }, toSection: settingCategory)
                 }
 
-                vc.dataSource.apply(currentSnapshot, animatingDifferences: false)
+                viewController.dataSource.apply(currentSnapshot, animatingDifferences: false)
             })
             .disposed(by: disposeBag)
     }
@@ -157,14 +157,14 @@ extension SettingsViewController: UITableViewDelegate {
             switch Item.allCases[indexPath.item] {
             case .flowDuration, .breakDuration:
                 if let settingItem = viewModel.items[Item.allCases[indexPath.item].value],
-                   let vc = settingItem.item.destVC as? DurationViewController {
-                    vc.completion = { [unowned self] durations in
+                   let durationVC = settingItem.item.destVC as? DurationViewController {
+                    durationVC.completion = { [unowned self] durations in
                         print("durations = ", durations)
                         if durations != [0, 0] && durations != [0] {
                             self.viewModel.updateConfiguration(item: settingItem.item, value: durations)
                         }
                     }
-                    navigationController?.pushViewController(vc, animated: false)
+                    navigationController?.pushViewController(durationVC, animated: false)
                 }
 
             default:

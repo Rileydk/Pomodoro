@@ -155,7 +155,7 @@ extension DurationViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let cell = tableView.cellForRow(at: indexPath)
         print(selectedRow[indexPath.section])
-        if selectedRow.count != 0,
+        if !selectedRow.isEmpty,
            let previousSelectedCell = tableView.cellForRow(at: selectedRow[indexPath.section]),
            previousSelectedCell != cell {
             cell!.accessoryType = .checkmark
