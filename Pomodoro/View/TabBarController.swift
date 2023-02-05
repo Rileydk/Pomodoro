@@ -34,7 +34,8 @@ extension TabBarController {
             case .timer:
                 controller = TimerViewController()
             case .settings:
-                controller = SettingsViewController()
+                let navigationController = UINavigationController(rootViewController: SettingsViewController())
+                controller = navigationController
             }
 
             controller.tabBarItem = tabBarItem()
